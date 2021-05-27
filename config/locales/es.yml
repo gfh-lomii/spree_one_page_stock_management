@@ -18,6 +18,6 @@ es:
     false: "No"
     enable_question: ¿Habilitado?
     reason: Razón
-    new_stock_movement_reason: Nuevo razón de movimiento de stock
+    new_stock_movement_reason: Nueva razón de movimiento de stock
     edit_stock_movement_reason: Editar razón de movimiento de stock
     enabled: Habilitado

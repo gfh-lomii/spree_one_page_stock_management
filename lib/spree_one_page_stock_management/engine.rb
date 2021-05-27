@@ -33,6 +33,10 @@ module SpreeOnePageStockManagement
       SpreeOnePageStockManagement::Config = Spree::SpreeOnePageStockManagementSetting.new
     end
 
+    unless Spree::PermittedAttributes.stock_movement_attributes.include?(:reason_id)
+      Spree::PermittedAttributes.stock_movement_attributes << :reason_id
+    end
+
     config.to_prepare &method(:activate).to_proc
   end
 end

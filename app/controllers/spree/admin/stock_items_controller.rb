@@ -62,7 +62,7 @@ module Spree
 
       private
         def stock_movement_params
-          params.require(:stock_movement).permit([:quantity, :stock_item, :stock_item_id, :originator, :action, :reason_id])
+          params.require(:stock_movement).permit(permitted_stock_movement_attributes)
         end
 
         def stock_item
