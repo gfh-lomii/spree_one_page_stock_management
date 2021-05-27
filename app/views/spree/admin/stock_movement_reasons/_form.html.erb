@@ -1,0 +1,12 @@
+<%= render partial: 'spree/shared/error_messages', locals: { target: @stock_movement_reason } %>
+<div class="form-group">
+  <%= f.field_container :reason do %>
+    <%= f.label Spree.t('reason') %>
+    <%= f.text_field :reason, class: 'form-control' %>
+  <% end %>
+
+  <%= f.field_container :enabled do %>
+    <%= f.label Spree.t('enabled') %>
+    <%= f.check_box :enabled, class: 'form-control'  %>
+  <% end %>
+</div>

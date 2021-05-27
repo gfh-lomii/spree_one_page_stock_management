@@ -1,0 +1,52 @@
+<% content_for :page_title do %>
+  <%= Spree.t(plural_resource_name(Spree::StockMovementReason)) %>
+<% end %>
+
+<% if @stock_movement_reasons.any? %>
+  <table class="table sortable" data-hook="producers_table" data-sortable-link="<%= update_positions_admin_producers_url %>">
+    <thead>
+    <tr>
+      <td>
+        <%= Spree.t('reason')%>
+      </td>
+      <td>
+        <%= Spree.t('enable_question')%>
+      </td>
+      <td class="actions actions-2 text-right">
+      </td>
+    </tr>
+    </thead>
+    <tbody>
+    <% @stock_movement_reasons.each do |stock_movement_reasons| %>
+      <tr>
+        <td>
+          <%= stock_movement_reasons.reason %>
+        </td>
+        <td>
+          <%= Spree.t(stock_movement_reasons.enabled) %>
+        </td>
+        <td class="actions actions-2 text-right">
+          <%= link_to_edit stock_movement_reasons, no_text: true, class: 'edit' %>
+        </td>
+      </tr>
+    <% end %>
+    </tbody>
+  </table>
+  <% if @stock_movement_reasons.respond_to?(:total_pages) %>
+    <div class="row pl-md-4 pl-sm-4">
+      <div class="col-12">
+        <div class="plp-pagination d-none d-lg-flex">
+          <%= paginate @stock_movement_reasons, window: 2, theme: 'twitter-bootstrap-4' %>
+        </div>
+
+        <div class="plp-pagination d-lg-none">
+          <%= paginate @stock_movement_reasons, window: 1, theme: 'twitter-bootstrap-4' %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+<% end %>
+
+  <% content_for :page_actions do %>
+  <%= button_link_to Spree.t(:new_stock_movement_reason), new_object_url, { class: "btn-success", icon: 'add', id: 'admin_new_producer' } %>
+<% end %>
