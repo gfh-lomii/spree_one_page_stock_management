@@ -4,6 +4,8 @@ module Spree
 
     has_one :spree_stock_movement_reason
 
+    validates :reason, presence: true
+
     scope :only_enable, -> { where("enabled = true") }
   end
 end

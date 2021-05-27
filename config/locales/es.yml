@@ -2,9 +2,22 @@
 # See https://github.com/svenfuchs/rails-i18n/tree/master/rails%2Flocale for starting points.
 
 es:
+  activerecord:
+    models:
+      spree/stock_movement_reason:
+        one: Razón de movimiento de stock
+        other: Razones de movimiento de stock
   spree:
     current_count_on_hand: Conteo actual
     product_name: Nombre Producto
     sku_and_options_text: SKU y opciones
     select_stock_location: Selecciona ubicación de Stock
     producer: Productor
+    choose_a_reason: Escoja un motivo
+    true: "Si"
+    false: "No"
+    enable_question: ¿Habilitado?
+    reason: Razón
+    new_stock_movement_reason: Nuevo razón de movimiento de stock
+    edit_stock_movement_reason: Editar razón de movimiento de stock
+    enabled: Habilitado

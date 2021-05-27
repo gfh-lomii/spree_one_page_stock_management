@@ -26,6 +26,7 @@ module Spree
 
       def create
         stock_movement = stock_location.stock_movements.build(stock_movement_params)
+        stock_movement = stock_location.stock_movements.build(stock_movement_params)
         stock_movement.stock_item = stock_location.set_up_stock_item(variant)
         stock_movement.originator = spree_current_user
 
@@ -61,7 +62,7 @@ module Spree
 
       private
         def stock_movement_params
-          params.require(:stock_movement).permit(permitted_stock_movement_attributes)
+          params.require(:stock_movement).permit([:quantity, :stock_item, :stock_item_id, :originator, :action, :reason_id])
         end
 
         def stock_item

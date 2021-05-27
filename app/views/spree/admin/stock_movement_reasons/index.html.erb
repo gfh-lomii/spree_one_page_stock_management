@@ -7,10 +7,10 @@
     <thead>
     <tr>
       <td>
-        Razón
+        <%= Spree.t('reason')%>
       </td>
       <td>
-        ¿Habilitado?
+        <%= Spree.t('enable_question')%>
       </td>
       <td class="actions actions-2 text-right">
       </td>
@@ -23,7 +23,7 @@
           <%= stock_movement_reasons.reason %>
         </td>
         <td>
-          <%= stock_movement_reasons.enabled %>
+          <%= Spree.t(stock_movement_reasons.enabled) %>
         </td>
         <td class="actions actions-2 text-right">
           <%= link_to_edit stock_movement_reasons, no_text: true, class: 'edit' %>

@@ -66,6 +66,15 @@ StockInventoryManager.prototype.stockItemBackorderableEvent = function() {
 StockInventoryManager.prototype.stockChangeSubmitEvent = function() {
   var _this = this;
   this.stocksContainer.on('click', '[data-hook="stock_item_submit"]', function(event) {
+    var reasonId = $(this).closest('[data-hook="form-stock-movement-reason"]').find('[data-hook="stock_movement[reason_id]"]').val();
+    if (!reasonId) {
+      var alertMovement = $(this).closest('[data-hook="form-stock-movement-reason"]').find('[data-hook="alert-invalid-movement"]');
+      alertMovement.show();
+      setTimeout(function(){
+        alertMovement.hide();
+      },3000)
+      return;
+    }
     event.preventDefault();
     if (_this.valid) {
       var $stockItem = $(this).parents('[data-hook="admin_stock_management_index_rows"]'),
@@ -80,7 +89,7 @@ StockInventoryManager.prototype.stockChangeSubmitEvent = function() {
         beforeSend: function(jqXHR, settings) {
           var quantity = new Number($element.val() - $element.data('oldValue'));
           $stockQuantityElement.val(quantity);
-          settings.data += '&' + $stockItem.find('[data-behavior="form"]').serialize();
+          settings.data += '&' + $stockItem.find('[data-behavior="form"]').serialize(); 
         },
         success: function(response) {
           $element.data('oldValue', response.stock_item.count_on_hand);

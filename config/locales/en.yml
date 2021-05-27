@@ -3,8 +3,21 @@
 
 en:
   spree:
+    activerecord:
+      models:
+        spree/stock_movement_reason:
+          one: Stock movement reason
+          other: Stock movement reasons
     current_count_on_hand: Current Count On Hand
     product_name: Product Name
     sku_and_options_text: SKU and Options
     select_stock_location: Select Stock Location
     producer: Producer
+    choose_a_reason: Escoja un motivo
+    true: "Yes"
+    false: "No"
+    enable_question: Enable?
+    reason: Reason
+    new_stock_movement_reason: New stock movement reason
+    edit_stock_movement_reason: Edit stock movement reason
+    enabled: Enable
