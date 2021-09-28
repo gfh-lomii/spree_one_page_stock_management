@@ -80,9 +80,10 @@ module Spree
               params[:q].present? && params[:q][:stock_location_id_eq].blank? ||
               params[:q].present? && params[:q][:stock_location_id_eq].to_s.eql?('0') ||
               nil
+            elsif params[:q].present? && params[:q][:stock_location_id_eq].present?
+              @stock_location_class.find_by(id: params[:q][:stock_location_id_eq])
             else
               @stock_location_class.find_by(id: params[:stock_location_id]) ||
-              @stock_location_class.find_by(id: params[:q][:stock_location_id_eq]) ||
               @stock_location_class.find_by(name: params[:stock_location]) ||
               spree_current_user.stock_locations.first ||
               @stock_location_class.first
