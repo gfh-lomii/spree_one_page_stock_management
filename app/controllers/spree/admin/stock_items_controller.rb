@@ -125,11 +125,13 @@ module Spree
               Spree::StockItem.all.
               accessible_by(current_ability, :read).
               includes({ variant: [:product, :images, option_values: :option_type] }).
+              where(spree_variants: { is_master: false, discontinue_on: nil }).
               order("#{ Spree::Variant.table_name }.product_id")
             else
               stock_location.stock_items.
               accessible_by(current_ability, :read).
               includes({ variant: [:product, :images, option_values: :option_type] }).
+              where(spree_variants: { is_master: false, discontinue_on: nil }).
               order("#{ Spree::Variant.table_name }.product_id")
             end
 
