@@ -14,6 +14,7 @@ module Spree
         respond_to do |format|
           format.js { render layout: false }
           format.html {}
+          format.csv { send_data stock_items_csv, filename: "stock-items-#{Date.today}.csv" }
         end
       end
 
@@ -57,6 +58,54 @@ module Spree
           format.html { redirect_back fallback_location: spree.stock_admin_product_url(stock_item.product) }
           format.js
         end
+      end
+
+      def import
+        reason_id = params[:reason_id]
+        csv = open(params[:document]).read
+        data = CSV.parse(csv, { headers: true })
+        data.each do |row|
+          begin
+            variant_id = row[0]
+            sku = row[2]
+            #CD - CENTRO DE DISTRIBUCION
+            #LF - La Florida
+            #LC - Las Condes
+            #NN - Ñuñoa
+            #VM - Viña del Mar
+            #MA - Machalí
+            variant = Spree::Variant.find_by_id(variant_id)
+            variant ||= Spree::Variant.find_by_sku(sku)
+            if variant
+              variant.stock_items.each do |stock_item|
+                stock = case stock_item.stock_location.internal_code
+                when 'CD'
+                  row[4]
+                when 'LF'
+                  row[5]
+                when 'LC'
+                  row[6]
+                when 'NN'
+                  row[7]
+                when 'VM'
+                  row[8]
+                when 'MA'
+                  row[9]
+                end
+                if stock.to_i != 0
+                  stock_movement = stock_item.stock_location.stock_movements.build(quantity: stock.to_i, reason_id: reason_id)
+                  stock_movement.stock_item = stock_item.stock_location.set_up_stock_item(variant)
+                  stock_movement.originator = spree_current_user
+                  stock_movement.save
+                end
+              end
+            end
+          rescue => e
+            puts ">>>>> error: #{e}"
+            next
+          end
+        end
+        redirect_to request.referrer, flash: { success: t('.success') }
       end
 
       private
@@ -177,6 +226,38 @@ module Spree
         def determine_storage_location
           return unless params[:stock_item].present? && params[:stock_item][:storage_location].present?
           stock_item.update_columns(storage_location: params[:stock_item][:storage_location])
+        end
+
+        def stock_items_csv
+          #CD - CENTRO DE DISTRIBUCION
+          #LF - La Florida
+          #LC - Las Condes
+          #NN - Ñuñoa
+          #VM - Viña del Mar
+          #MA - Machalí
+          attributes = %w{ID name sku options CD LF LC NN VM MA}
+          _collection = Spree::Variant.
+                        includes(:product, stock_items: :stock_location, option_values: :option_type).
+                        where(id: @search.result.pluck(:variant_id).uniq)
+
+          CSV.generate(headers: true) do |csv|
+            csv << attributes
+            _collection.each do |variant|
+              row = [
+                variant.id,
+                variant.product.name,
+                variant.sku,
+                variant.options_text,
+                variant.stock_items.find{|si| si.stock_location.internal_code == 'CD'}&.count_on_hand || 0,
+                variant.stock_items.find{|si| si.stock_location.internal_code == 'LF'}&.count_on_hand || 0,
+                variant.stock_items.find{|si| si.stock_location.internal_code == 'LC'}&.count_on_hand || 0,
+                variant.stock_items.find{|si| si.stock_location.internal_code == 'NN'}&.count_on_hand || 0,
+                variant.stock_items.find{|si| si.stock_location.internal_code == 'VM'}&.count_on_hand || 0,
+                variant.stock_items.find{|si| si.stock_location.internal_code == 'MA'}&.count_on_hand || 0
+              ]
+              csv << row
+            end
+          end
         end
     end
   end

@@ -1,0 +1,25 @@
+<div class="row">
+  <div class="col-12">
+    <%= form_with(url: import_admin_stock_items_url, local: true) do |form| %>
+      <div class="form-row align-items-center">
+        <div class="col-auto">
+          <a class="" href="https://lomapp-uploads.s3.amazonaws.com/stock-items-template.csv" role="button">Download template</a>
+        </div>
+        <div class="col-auto">
+          <%= select_tag 'reason_id',
+            options_for_select(Spree::StockMovementReason.only_enable.map {|sm| ["#{sm.reason}", sm.id] }),
+            { class: 'form-control', include_blank: Spree.t('choose_a_reason') } %>
+        </div>
+        <div class="col-auto">
+          <div class="custom-file">
+            <%= form.file_field :document, class: 'custom-file-input', accept: '.csv', onchange: "form.submit();" %>
+            <label class="custom-file-label" for="document"><%= t '.choose_a_file' %></label>
+          </div>
+        </div>
+        <div class="col-auto ml-auto">
+          <%= link_to "Export to CSV", admin_stock_items_path(format:'csv',params: current_page_params), class: "btn btn-primary" %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>
