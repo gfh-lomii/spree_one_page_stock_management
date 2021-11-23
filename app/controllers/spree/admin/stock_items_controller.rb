@@ -77,8 +77,9 @@ module Spree
             variant = Spree::Variant.find_by_id(variant_id)
             variant ||= Spree::Variant.find_by_sku(sku)
             if variant
-              variant.stock_items.each do |stock_item|
-                stock = case stock_item.stock_location.internal_code
+              %w[CD LF LC NN VM MA].each do |internal_code|
+                stock_item = variant.stock_items.find{|si| si.stock_location.internal_code == internal_code}
+                stock = case internal_code
                 when 'CD'
                   row[4]
                 when 'LF'
@@ -92,7 +93,17 @@ module Spree
                 when 'MA'
                   row[9]
                 end
+                if stock == '--' && stock_item
+                  stock_item.destroy
+                end
                 if stock.to_i != 0
+                  unless stock_item
+                    _stock_location = Spree::StockLocation.find_by(internal_code: internal_code)
+                    next unless _stock_location
+                    _stock_item = variant.stock_items.build(stock_location: _stock_location)
+                    _stock_item.save
+                    stock_item = _stock_item
+                  end
                   stock_movement = stock_item.stock_location.stock_movements.build(quantity: stock.to_i, reason_id: reason_id)
                   stock_movement.stock_item = stock_item.stock_location.set_up_stock_item(variant)
                   stock_movement.originator = spree_current_user
@@ -248,12 +259,12 @@ module Spree
                 variant.product.name,
                 variant.sku,
                 variant.options_text,
-                variant.stock_items.find{|si| si.stock_location.internal_code == 'CD'}&.count_on_hand || 0,
-                variant.stock_items.find{|si| si.stock_location.internal_code == 'LF'}&.count_on_hand || 0,
-                variant.stock_items.find{|si| si.stock_location.internal_code == 'LC'}&.count_on_hand || 0,
-                variant.stock_items.find{|si| si.stock_location.internal_code == 'NN'}&.count_on_hand || 0,
-                variant.stock_items.find{|si| si.stock_location.internal_code == 'VM'}&.count_on_hand || 0,
-                variant.stock_items.find{|si| si.stock_location.internal_code == 'MA'}&.count_on_hand || 0
+                variant.stock_items.find{|si| si.stock_location.internal_code == 'CD'}&.count_on_hand || '--',
+                variant.stock_items.find{|si| si.stock_location.internal_code == 'LF'}&.count_on_hand || '--',
+                variant.stock_items.find{|si| si.stock_location.internal_code == 'LC'}&.count_on_hand || '--',
+                variant.stock_items.find{|si| si.stock_location.internal_code == 'NN'}&.count_on_hand || '--',
+                variant.stock_items.find{|si| si.stock_location.internal_code == 'VM'}&.count_on_hand || '--',
+                variant.stock_items.find{|si| si.stock_location.internal_code == 'MA'}&.count_on_hand || '--'
               ]
               csv << row
             end
