@@ -66,25 +66,29 @@
           </td>
           <td class='text-center'>
             <div class='row' data-hook='form-stock-movement-reason'>
-              <div class='col-md-12'>
+              <div class='col-md-12 m-1'>
                 <div class="input-group text-center" data-hook='stock-count'>
                   <%= label_tag Spree.t('quantity'), nil, class:"w-100" %>
                   <%= text_field_tag 'total_stock_quantity', stock_item.count_on_hand, id: "number_spinner",
                     size: "10", class: "text-center form-control input-number", style: 'min-width: 100px !important;', data: { hook: 'number_spinner', old_value: stock_item.count_on_hand } %>
-
 
                   <%= hidden_field_tag 'stock_movement[quantity]', 0, data: { hook: 'stock_movement_quantity', behavior: 'form' } %>
                   <%= hidden_field_tag :stock_location_id, @stock_location&.id || stock_item.stock_location_id, data: { hook: 'stock_location_id', behavior: 'form' } %>
                   <%= hidden_field_tag :variant_id, stock_item.variant_id, data: { hook: 'variant_id', behavior: 'form' } %>
                 </div>
               </div>
-              <div class="col-12">
+              <div class="col-12 m-1">
                 <%= select_tag 'stock_movement[reason_id]',
                                options_for_select(Spree::StockMovementReason.only_enable.map {|sm| ["#{sm.reason}", sm.id] }),
                                { class: 'form-control', include_blank: Spree.t('choose_a_reason'), data: { hook: 'stock_movement[reason_id]', behavior: 'form' } } %>
               </div>
               <div class="col-12">
-              <p style="display: none" data-hook="alert-invalid-movement" class="alert alert-danger p-1 w-100 ">Escoja un motivo</p>
+              <p style="display: none" data-hook="alert-invalid-movement" class="alert alert-danger p-1 w-100 "><%= Spree.t(:choose_a_reason) %></p>
+              </div>
+              <div class="col-12 m-1">
+                <%= label_tag Spree.t(:order_number_sm), nil, class:"w-100" %>
+                <%= text_field_tag 'stock_movement[order_number]', nil, class: "text-center form-control", style: 'min-width: 100px !important;',
+                  data: { hook: 'stock_movement[order_number]', behavior: 'form' } %>
               </div>
               <div class='col-md-12'>
                 <%= link_to Spree.t(:save, scope: :actions), 'javascript:void(0)', class: 'submit btn btn-primary action-save',

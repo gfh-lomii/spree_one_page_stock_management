@@ -37,6 +37,14 @@ module SpreeOnePageStockManagement
       Spree::PermittedAttributes.stock_movement_attributes << :reason_id
     end
 
+    unless Spree::PermittedAttributes.stock_movement_attributes.include?(:order_id)
+      Spree::PermittedAttributes.stock_movement_attributes << :order_id
+    end
+
+    unless Spree::PermittedAttributes.stock_movement_attributes.include?(:order_number)
+      Spree::PermittedAttributes.stock_movement_attributes << :order_number
+    end
+
     config.to_prepare &method(:activate).to_proc
   end
 end
