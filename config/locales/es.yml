@@ -21,6 +21,7 @@ es:
     new_stock_movement_reason: Nueva razón de movimiento de stock
     edit_stock_movement_reason: Editar razón de movimiento de stock
     enabled: Habilitado
+    order_number_sm: Número de pedido
     admin:
       stock_items:
         import:

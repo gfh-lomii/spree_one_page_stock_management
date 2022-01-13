@@ -48,7 +48,6 @@ module Spree
             format.html { redirect_back fallback_location: spree.stock_admin_product_url(variant.product) }
           end
         end
-
       end
 
       def destroy

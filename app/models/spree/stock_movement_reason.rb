@@ -2,8 +2,7 @@ module Spree
   class StockMovementReason < Spree::Base
     acts_as_paranoid
 
-    has_one :spree_stock_movement_reason
-
+    has_many :stock_movements, class_name: 'Spree::StockMovement', foreign_key: :reason_id
     validates :reason, presence: true
 
     scope :only_enable, -> { where("enabled = true") }
