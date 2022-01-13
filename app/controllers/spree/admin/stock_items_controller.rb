@@ -14,7 +14,7 @@ module Spree
         respond_to do |format|
           format.js { render layout: false }
           format.html {}
-          format.csv { send_data stock_items_csv, filename: "stock-items-#{Date.today}.csv" }
+          format.csv { send_data stock_items_csv, encoding: 'UTF-8', filename: "stock-items-#{Date.today}.csv" }
         end
       end
 
@@ -66,7 +66,7 @@ module Spree
         data.each do |row|
           begin
             variant_id = row[0]
-            sku = row[2]
+            sku = row[3]
             #CD - CENTRO DE DISTRIBUCION
             #LF - La Florida
             #LC - Las Condes
@@ -79,35 +79,27 @@ module Spree
               %w[CD LF LC NN VM MA].each do |internal_code|
                 stock_item = variant.stock_items.find{|si| si.stock_location.internal_code == internal_code}
                 stock = case internal_code
-                when 'CD'
-                  row[4]
-                when 'LF'
-                  row[5]
-                when 'LC'
-                  row[6]
-                when 'NN'
-                  row[7]
-                when 'VM'
-                  row[8]
-                when 'MA'
-                  row[9]
+                when 'CD' then row[5]
+                when 'LF' then row[6]
+                when 'LC' then row[7]
+                when 'NN' then row[8]
+                when 'VM' then row[9]
+                when 'MA' then row[10]
                 end
-                if stock == '--' && stock_item
-                  stock_item.destroy
+
+                next if stock.to_i.eql?(0)
+
+                unless stock_item
+                  _stock_location = Spree::StockLocation.find_by(internal_code: internal_code)
+                  next unless _stock_location
+                  _stock_item = variant.stock_items.build(stock_location: _stock_location)
+                  _stock_item.save
+                  stock_item = _stock_item
                 end
-                if stock.to_i != 0
-                  unless stock_item
-                    _stock_location = Spree::StockLocation.find_by(internal_code: internal_code)
-                    next unless _stock_location
-                    _stock_item = variant.stock_items.build(stock_location: _stock_location)
-                    _stock_item.save
-                    stock_item = _stock_item
-                  end
-                  stock_movement = stock_item.stock_location.stock_movements.build(quantity: stock.to_i, reason_id: reason_id)
-                  stock_movement.stock_item = stock_item.stock_location.set_up_stock_item(variant)
-                  stock_movement.originator = spree_current_user
-                  stock_movement.save
-                end
+                stock_movement = stock_item.stock_location.stock_movements.build(quantity: stock.to_i, reason_id: reason_id)
+                stock_movement.stock_item = stock_item.stock_location.set_up_stock_item(variant)
+                stock_movement.originator = spree_current_user
+                stock_movement.save
               end
             end
           rescue => e
@@ -245,7 +237,7 @@ module Spree
           #NN - Ñuñoa
           #VM - Viña del Mar
           #MA - Machalí
-          attributes = %w{ID name sku options CD LF LC NN VM MA}
+          attributes = %w{ID NAME PORDUCER SKU OPTIONS CD LF LC NN VM MA}
           _collection = Spree::Variant.
                         includes(:product, stock_items: :stock_location, option_values: :option_type).
                         where(id: @search.result.pluck(:variant_id).uniq)
@@ -256,14 +248,15 @@ module Spree
               row = [
                 variant.id,
                 variant.product.name,
+                variant.product.producer.name,
                 variant.sku,
                 variant.options_text,
-                variant.stock_items.find{|si| si.stock_location.internal_code == 'CD'}&.count_on_hand || '--',
-                variant.stock_items.find{|si| si.stock_location.internal_code == 'LF'}&.count_on_hand || '--',
-                variant.stock_items.find{|si| si.stock_location.internal_code == 'LC'}&.count_on_hand || '--',
-                variant.stock_items.find{|si| si.stock_location.internal_code == 'NN'}&.count_on_hand || '--',
-                variant.stock_items.find{|si| si.stock_location.internal_code == 'VM'}&.count_on_hand || '--',
-                variant.stock_items.find{|si| si.stock_location.internal_code == 'MA'}&.count_on_hand || '--'
+                '0',
+                '0',
+                '0',
+                '0',
+                '0',
+                '0'
               ]
               csv << row
             end

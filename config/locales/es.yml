@@ -22,6 +22,9 @@ es:
     edit_stock_movement_reason: Editar razón de movimiento de stock
     enabled: Habilitado
     order_number_sm: Número de pedido
+    export_to_csv: Exportar Plantilla CSV
+    choose_a_file: Selecciona un archivo
+    download_template: Descargar plantilla
     admin:
       stock_items:
         import:
