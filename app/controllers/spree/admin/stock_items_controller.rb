@@ -248,7 +248,7 @@ module Spree
               row = [
                 variant.id,
                 variant.product.name,
-                variant.product.producer.name,
+                variant.producer&.name || variant.product.producer&.name,
                 variant.sku,
                 variant.options_text,
                 '0',
