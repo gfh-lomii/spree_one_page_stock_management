@@ -28,7 +28,8 @@ module Spree
 
     def create_history
       reason_type_id = load_reason_type_id
-      body = "#{self.reason.reason}. #{self.quantity.to_s} #{self.stock_item.variant_name} (#{self.stock_item.variant.producer.name})"
+      producer_name = self.stock_item.variant.producer&.name || self.stock_item.variant.product.producer&.name
+      body = "#{self.reason.reason}. #{self.quantity.to_s} #{self.stock_item&.variant_name} (#{producer_name})"
 
       self.order.new_history(body, reason_type_id, self.originator_id)
     end
