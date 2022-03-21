@@ -59,7 +59,11 @@
                                 item.backorderable?,
                                 class: 'stock_item_backorderable',
                                 id: "stock_item_backorderable_#{item.stock_location.id}" %>
+                          <% end if can? :update, item %>
+                        </td>
 
+                        <td class="text-center">
+                        <%= form_tag admin_stock_item_path(item), method: :put, class: 'toggle_stock_item_to_disable' do %>
                           <%= check_box_tag 'stock_item[to_disable]', true,
                                             item.to_disable?,
                                             class: 'stock_item_to_disable',
