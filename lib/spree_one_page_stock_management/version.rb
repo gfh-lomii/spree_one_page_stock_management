@@ -10,7 +10,7 @@ module SpreeOnePageStockManagement
   module VERSION
     MAJOR = 0
     MINOR = 2
-    TINY  = 5
+    TINY  = 6
     PRE   = 'alpha'.freeze
 
     STRING = [MAJOR, MINOR, TINY, PRE].compact.join('.')
