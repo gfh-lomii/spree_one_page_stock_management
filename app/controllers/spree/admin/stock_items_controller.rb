@@ -5,6 +5,7 @@ module Spree
       before_action :determine_backorderable, only: :update
       before_action :determine_disable, only: :update
       before_action :determine_storage_location, only: :update
+      before_action :determine_security_stock, only: :update
       before_action :variant_storage_location, only: :index
       before_action :producer_names, only: :index
       before_action :stock_location
@@ -234,6 +235,11 @@ module Spree
         def determine_storage_location
           return unless params[:stock_item].present? && params[:stock_item][:storage_location].present?
           stock_item.update_columns(storage_location: params[:stock_item][:storage_location])
+        end
+
+        def determine_security_stock
+          return unless params[:stock_item].present? && params[:stock_item][:security_stock].present?
+          stock_item.update_columns(security_stock: params[:stock_item][:security_stock])
         end
 
         def stock_items_csv
