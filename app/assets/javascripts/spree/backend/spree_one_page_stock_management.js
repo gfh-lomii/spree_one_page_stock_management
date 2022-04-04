@@ -6,3 +6,5 @@
 //= require popper
 
 //= require bootstrap-sprockets
+
+//= require spree/backend/stock_item_to_disable

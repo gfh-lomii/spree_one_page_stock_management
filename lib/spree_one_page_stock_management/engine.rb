@@ -20,6 +20,9 @@ module SpreeOnePageStockManagement
 
       unless Spree::PermittedAttributes.stock_item_attributes.include?(:security_stock)
         Spree::PermittedAttributes.stock_item_attributes << :security_stock
+
+      unless Spree::PermittedAttributes.stock_item_attributes.include?(:to_disable)
+        Spree::PermittedAttributes.stock_item_attributes << :to_disable
       end
 
       Spree::StockItem.class_eval do

@@ -25,6 +25,7 @@ es:
     export_to_csv: Exportar Plantilla CSV
     choose_a_file: Selecciona un archivo
     download_template: Descargar plantilla
+    to_disable: A deshabilitar
     admin:
       stock_items:
         import:
