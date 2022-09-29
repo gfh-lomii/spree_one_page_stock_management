@@ -49,18 +49,26 @@
           </td>
           <td class='text-center' data-hook='storage_location'>
             <div class='row'>
-              <div class='col-md-12'>
-                <div class="input-group" data-hook=''>
-                  <%= form_tag admin_stock_item_path(stock_item, format: :js), method: :put, remote: true do %>
+              <%= form_tag admin_stock_item_path(stock_item, format: :js), method: :put, remote: true do %>
+                <div class='col-md-12'>
+                  <div class="input-group" data-hook=''>
                     <%= label_tag Spree.t('storage_location') %>
-                    <%= text_field_tag 'stock_item[storage_location]', stock_item.storage_location, 
+                    <%= text_field_tag 'stock_item[storage_location]', stock_item.storage_location,
                       id: "stock_item_storage_location_#{stock_item.stock_location.id}", class: "text-center form-control input-number", style: 'min-width: 100px !important;',
                       data: { hook: 'storage_location', behavior: 'form' } %>
+                  </div>
                 </div>
-              </div>
-              <div class='col-md-12'>
-                <%= submit_tag Spree.t(:save, scope: :actions), class: 'submit btn btn-primary action-save' %>
-              </div>
+                <div class='col-md-12'>
+                    <div class="input-group" data-hook=''>
+                    <%= label_tag Spree.t('security_stock') %>
+                    <%= text_field_tag 'stock_item[security_stock]', stock_item.security_stock,
+                      id: "stock_item_security_stock_#{stock_item.stock_location.id}", class: "text-center form-control input-number", style: 'min-width: 100px !important;',
+                      data: { hook: 'security_stock', behavior: 'form' } %>
+                  </div>
+                </div>
+                <div class='col-md-12'>
+                  <%= submit_tag Spree.t(:save, scope: :actions), class: 'submit btn btn-primary action-save' %>
+                </div>
               <% end if can? :update, stock_item %>
             </div>
           </td>

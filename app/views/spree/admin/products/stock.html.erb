@@ -32,9 +32,7 @@
                     <%= check_box_tag 'track_inventory', 1, variant.track_inventory?,
                                       class: 'track_inventory_checkbox' %>
                     <%= Spree.t(:track_inventory) %>
-                    <%= hidden_field_tag 'variant[track_inventory]', variant.track_inventory?,
-      class: 'variant_track_inventory',
-      id: "variant_track_inventory_#{variant.id}" %>
+                    <%= hidden_field_tag 'variant[track_inventory]', variant.track_inventory?, class: 'variant_track_inventory', id: "variant_track_inventory_#{variant.id}" %>
                   <% end %>
                 </div>
               <% end if can?(:update, @product) && can?(:update, variant) %>
@@ -46,6 +44,7 @@
                   <th><%= Spree.t(:stock_location) %></th>
                   <th class="text-center"><%= Spree.t(:count_on_hand) %></th>
                   <th class="text-center"><%= Spree.t(:backorderable) %></th>
+                  <th class="text-center"><%= Spree.t(:to_disable) %></th>
                   <th class="actions text-center"></th>
                 </thead>
                 <tbody>
@@ -60,6 +59,15 @@
                                 item.backorderable?,
                                 class: 'stock_item_backorderable',
                                 id: "stock_item_backorderable_#{item.stock_location.id}" %>
+                          <% end if can? :update, item %>
+                        </td>
+
+                        <td class="text-center">
+                        <%= form_tag admin_stock_item_path(item), method: :put, class: 'toggle_stock_item_to_disable' do %>
+                          <%= check_box_tag 'stock_item[to_disable]', true,
+                                            item.to_disable?,
+                                            class: 'stock_item_to_disable',
+                                            id: "stock_item_to_disable_#{item.stock_location.id}" %>
                         <% end if can? :update, item %>
                       </td>
                       <td class="actions actions-1 text-center">

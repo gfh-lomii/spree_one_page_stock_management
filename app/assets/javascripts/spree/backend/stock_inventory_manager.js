@@ -16,6 +16,7 @@ StockInventoryManager.prototype.bindEvents = function() {
   this.stockChangeValidateEvent();
   this.stockItemBackorderableEvent();
   this.stockChangeSubmitEvent();
+  this.stockItemToDisableEvent();
 };
 
 // when stock location is changed
@@ -58,6 +59,14 @@ StockInventoryManager.prototype.stockChangeValidateEvent = function() {
 StockInventoryManager.prototype.stockItemBackorderableEvent = function() {
   var _this = this;
   this.stocksContainer.on('click', '[data-hook="stock_item_backorderable"]', function() {
+    _this.valid = true;
+  });
+};
+
+// when stock item is made to disable
+StockInventoryManager.prototype.stockItemToDisableEvent = function() {
+  var _this = this;
+  this.stocksContainer.on('click', '[data-hook="stock_item_to_disable"]', function() {
     _this.valid = true;
   });
 };
