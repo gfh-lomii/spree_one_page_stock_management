@@ -78,7 +78,8 @@ module Spree
             variant = current_store.variants.find_by_id(variant_id)
             variant ||= current_store.variants.find_by_sku(sku)
             if variant
-              codes = current_store.stock_locations.map(&:internal_code).reject!(&:blank?)
+              codes = current_store&.stock_locations&.map(&:internal_code)&.reject!(&:blank?)
+              codes ||= Spree::StockLocation.all.map(&:internal_code).reject!(&:blank?)
               codes.each do |internal_code|
                 stock_item = variant.stock_items.find{ |si| si.stock_location.internal_code == internal_code }
                 row_num = 5+codes.index(internal_code)
@@ -237,7 +238,8 @@ module Spree
         end
 
         def stock_items_csv
-          codes = current_store.stock_locations.map(&:internal_code).reject!(&:blank?)
+          codes = current_store&.stock_locations&.map(&:internal_code)&.reject!(&:blank?)
+          codes ||= Spree::StockLocation.all.map(&:internal_code).reject!(&:blank?)
           zeros = []
           codes.each{ |c| zeros.push(0) }
 
