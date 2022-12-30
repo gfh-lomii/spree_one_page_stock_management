@@ -69,30 +69,24 @@ module Spree
           begin
             variant_id = row[0]
             sku = row[3]
+            #Example:
             #CD - CENTRO DE DISTRIBUCION
             #LF - La Florida
             #LC - Las Condes
             #NN - Ñuñoa
             #VM - Viña del Mar
-            #MA - Machalí
-            variant = Spree::Variant.find_by_id(variant_id)
-            variant ||= Spree::Variant.find_by_sku(sku)
+            variant = current_store.variants.find_by_id(variant_id)
+            variant ||= current_store.variants.find_by_sku(sku)
             if variant
-              %w[CD LF LC NN VM MA].each do |internal_code|
-                stock_item = variant.stock_items.find{|si| si.stock_location.internal_code == internal_code}
-                stock = case internal_code
-                when 'CD' then row[5]
-                when 'LF' then row[6]
-                when 'LC' then row[7]
-                when 'NN' then row[8]
-                when 'VM' then row[9]
-                when 'MA' then row[10]
-                end
-
+              codes = current_store.stock_locations.map(&:internal_code).reject!(&:blank?)
+              codes.each do |internal_code|
+                stock_item = variant.stock_items.find{ |si| si.stock_location.internal_code == internal_code }
+                row_num = 5+codes.index(internal_code)
+                stock =row[row_num]
                 next if stock.to_i.eql?(0)
 
                 unless stock_item
-                  _stock_location = Spree::StockLocation.find_by(internal_code: internal_code)
+                  _stock_location = current_store.stock_locations.find_by(internal_code: internal_code)
                   next unless _stock_location
                   _stock_item = variant.stock_items.build(stock_location: _stock_location)
                   _stock_item.save
@@ -157,7 +151,7 @@ module Spree
 
         def set_stock_locations
           @stock_locations =
-            Spree::StockLocation.all.map { |stock_location| [stock_location.name, stock_location.id] }
+            current_store.stock_locations.all.map { |stock_location| [stock_location.name, stock_location.id] }
 
           @stock_locations << [Spree.t('all'), 0]
         end
@@ -174,7 +168,7 @@ module Spree
           @collection =
             if stock_location.blank? && params[:q][:stock_location_id_eq].to_s.eql?('0') ||
               stock_location.blank?
-              Spree::StockItem.all.
+              current_store.stock_items.
               accessible_by(current_ability, :read).
               includes({ variant: [:product, :images, option_values: :option_type] }).
               where(spree_variants: { is_master: false, discontinue_on: nil }).
@@ -200,11 +194,11 @@ module Spree
 
         def variant_storage_location
           @variant_storage_location =
-            Spree::Variant.all
-                          .map{ |v| [v.storage_location, v.storage_location] }
-                          .uniq
-                          .delete_if { |k, v| v.blank? }
-                          .sort_by{ |k, v| k.downcase }
+            current_store.variants
+                         .map{ |v| [v.storage_location, v.storage_location] }
+                         .uniq
+                         .delete_if { |k, v| v.blank? }
+                         .sort_by{ |k, v| k.downcase }
 
         end
 
@@ -243,33 +237,25 @@ module Spree
         end
 
         def stock_items_csv
-          #CD - CENTRO DE DISTRIBUCION
-          #LF - La Florida
-          #LC - Las Condes
-          #NN - Ñuñoa
-          #VM - Viña del Mar
-          #MA - Machalí
-          attributes = %w{ID NAME PORDUCER SKU OPTIONS CD LF LC NN VM MA}
-          _collection = Spree::Variant.
+          codes = current_store.stock_locations.map(&:internal_code).reject!(&:blank?)
+          zeros = []
+          codes.each{ |c| zeros.push(0) }
+
+          column_attributes = %w{ID NAME PORDUCER SKU OPTIONS} + codes
+          _collection = current_store.variants.
                         includes(:product, stock_items: :stock_location, option_values: :option_type).
                         where(id: @search.result.pluck(:variant_id).uniq)
 
           CSV.generate(headers: true) do |csv|
-            csv << attributes
+            csv << column_attributes
             _collection.each do |variant|
               row = [
                 variant.id,
                 variant.product.name,
                 variant.producer&.name || variant.product.producer&.name,
                 variant.sku,
-                variant.options_text,
-                '0',
-                '0',
-                '0',
-                '0',
-                '0',
-                '0'
-              ]
+                variant.options_text
+              ] + zeros
               csv << row
             end
           end
