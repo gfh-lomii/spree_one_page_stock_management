@@ -107,9 +107,9 @@ module Spree
       end
 
       def set_codes
-        current_store&.stock_locations&.map(&:internal_code)&.reject(&:blank?) ||
-        spree_current_user&.stock_locations.map(&:internal_code)&.reject(&:blank?) ||
-        Spree::StockLocation.all.map(&:internal_code).reject(&:blank?)
+        current_store&.stock_locations&.active&.map(&:internal_code)&.reject(&:blank?) ||
+        spree_current_user&.stock_locations&.active.map(&:internal_code)&.reject(&:blank?) ||
+        Spree::StockLocation.active.map(&:internal_code).reject(&:blank?)
       end
 
       private
