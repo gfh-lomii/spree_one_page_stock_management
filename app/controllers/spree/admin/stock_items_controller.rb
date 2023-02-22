@@ -166,7 +166,7 @@ module Spree
           @variant ||= Variant.find(params[:variant_id])
         end
 
-        def collection
+        def collection(paginate=true)
           #return @collection if @collection.present?
           # params[:q] can be blank upon pagination
           params[:q] = {} if params[:q].blank?
@@ -191,9 +191,12 @@ module Spree
            params[:q][:stock_location_id_eq] = '' if select_all
 
           @search = @collection.ransack(params[:q])
-          @collection = @search.result.
-            page(params[:page]).
-            per(params[:per_page] || SpreeOnePageStockManagement::Config[:stock_items_per_page])
+          @collection = @search.result
+          if paginate
+            @collection = @collection.
+              page(params[:page]).
+              per(params[:per_page] || SpreeOnePageStockManagement::Config[:stock_items_per_page])
+          end
           params[:q][:stock_location_id_eq] = '0' if select_all
           @collection
         end
@@ -250,7 +253,7 @@ module Spree
           column_attributes = %w{ID NAME PORDUCER SKU OPTIONS} + codes
           _collection = current_store.variants.
                         includes(:product, stock_items: :stock_location, option_values: :option_type).
-                        where(id: @search.result.pluck(:variant_id).uniq)
+                        where(id: collection(false).pluck(:variant_id).uniq)
 
           CSV.generate(headers: true) do |csv|
             csv << column_attributes
